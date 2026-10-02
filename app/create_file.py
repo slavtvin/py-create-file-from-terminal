@@ -15,7 +15,6 @@ def parse_args() -> tuple:
         if "-f" in args:
             f_index = args.index("-f")
             dir_parts = args[d_index + 1: f_index]
-            # ВИПРАВЛЕНО: прибрали зріз `:`, щоб отримати рядок, а не список
             file_name = args[f_index + 1] if f_index + 1 < len(args) else None
         else:
             dir_parts = args[d_index + 1:]
@@ -38,12 +37,15 @@ def create_directory(dir_parts: list) -> str | None:
 
 def write_to_file() -> list:
     lines = []
+    num = 1
     while True:
-        text = input("Enter content line: ")
+        text = input(f"Enter content line {num}: ")
         if text == "stop":
             break
         lines.append(text)
+        num += 1
     return lines
+
 
 
 def open_file(dir_path: str | None, file_name: str, lines: list) -> None:
@@ -65,3 +67,16 @@ def open_file(dir_path: str | None, file_name: str, lines: list) -> None:
 
         for i, line in enumerate(lines, start=1):
             file.write(f"{i} {line}\n")
+
+
+if __name__ == "__main__":
+    dirs, file_name = parse_args()
+
+    dir_path = create_directory(dirs)
+
+    if file_name:
+        lines = write_to_file()
+        open_file(dir_path, file_name, lines)
+        print("Файл успішно створено!")
+    else:
+        print("Помилка: не вказано назву файлу (використовуйте -f).")
