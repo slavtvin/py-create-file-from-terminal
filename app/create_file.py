@@ -64,8 +64,8 @@ def open_file(dir_path: str | None, file_name: str, lines: list) -> None:
 
         file.write(f"{timestamp}\n")
 
-        for i, line in enumerate(lines, start=1):
-            file.write(f"{i} {line}\n")
+        for line_number, line in enumerate(lines, start=1):
+            file.write(f"{line_number} {line}\n")
 
 
 if __name__ == "__main__":
