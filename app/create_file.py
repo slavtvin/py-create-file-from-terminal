@@ -47,7 +47,6 @@ def write_to_file() -> list:
     return lines
 
 
-
 def open_file(dir_path: str | None, file_name: str, lines: list) -> None:
     if dir_path:
         full_path = os.path.join(dir_path, file_name)
