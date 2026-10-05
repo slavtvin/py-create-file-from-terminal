@@ -30,7 +30,10 @@ def main() -> None:
         os.makedirs(dir_path, exist_ok=True)
 
     if filename:
-        file_path = os.path.join(dir_path, filename) if dir_path else filename
+        if dir_path:
+            file_path = os.path.join(dir_path, filename)
+        else:
+            file_path = filename
 
         file_exists = os.path.exists(file_path)
 
