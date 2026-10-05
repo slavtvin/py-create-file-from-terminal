@@ -4,57 +4,51 @@ from datetime import datetime
 
 
 def main() -> None:
-    args = sys.argv[1:]
-
     directories = []
     filename = None
-    i = 0
 
-    while i < len(args):
-        if args[i] == "-d":
+    i = 1
+    while i < len(sys.argv):
+        if sys.argv[i] == "-d":
             i += 1
-            while i < len(args) and not args[i].startswith("-"):
-                directories.append(args[i])
+            while i < len(sys.argv) and not sys.argv[i].startswith("-"):
+                directories.append(sys.argv[i])
                 i += 1
-        elif args[i] == "-f":
+        elif sys.argv[i] == "-f":
             i += 1
-            if i < len(args):
-                filename = args[i]
+            if i < len(sys.argv):
+                filename = sys.argv[i]
                 i += 1
         else:
             i += 1
 
-    dir_path = ""
     if directories:
         dir_path = os.path.join(*directories)
         os.makedirs(dir_path, exist_ok=True)
+    else:
+        dir_path = ""
 
     if filename:
-        if dir_path:
-            file_path = os.path.join(dir_path, filename)
-        else:
-            file_path = filename
+        file_path = os.path.join(dir_path, filename) if dir_path else filename
+    else:
+        return
 
-        file_exists = os.path.exists(file_path)
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    lines = [timestamp]
+    line_num = 1
 
-        lines = []
-        line_number = 1
-        while True:
-            user_input = input("Enter content line: ")
-            if user_input.lower() == "stop":
-                break
-            lines.append(f"{line_number} {user_input}")
-            line_number += 1
+    while True:
+        user_input = input("Enter content line: ")
+        if user_input == "stop":
+            break
+        lines.append(f"{line_num} {user_input}")
+        line_num += 1
 
-        with open(file_path, "a") as f:
-            if file_exists and os.path.getsize(file_path) > 0:
-                f.write("\n\n")
-
-            timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            f.write(timestamp + "\n")
-
-            for line in lines:
-                f.write(line + "\n")
+    mode = "a" if os.path.exists(file_path) else "w"
+    with open(file_path, mode) as f:
+        if mode == "a" and os.path.getsize(file_path) > 0:
+            f.write("\n\n")
+        f.write("\n".join(lines) + "\n")
 
 
 if __name__ == "__main__":
