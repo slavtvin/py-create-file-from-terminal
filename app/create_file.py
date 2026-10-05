@@ -57,7 +57,7 @@ def main() -> None:
         line_num += 1
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    file_exists = os.path.exists(file_path) and os.path.getsize(file_path) > 0
+    file_exists = os.path.exists(file_path)
 
     with open(file_path, "a", encoding="utf-8") as f:
         if file_exists:
