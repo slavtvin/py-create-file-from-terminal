@@ -53,7 +53,7 @@ def open_file(dir_path: str | None, file_name: str, lines: list) -> None:
     else:
         full_path = file_name
 
-    file_exists = os.path.exists(full_path) and os.path.getsize(full_path) > 0
+    file_exists = os.path.exists(full_path)
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
