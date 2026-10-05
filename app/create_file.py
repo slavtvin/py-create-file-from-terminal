@@ -1,54 +1,70 @@
-import sys
-import os
 from datetime import datetime
+import os
+import sys
 
 
-def main() -> None:
+def parse_args() -> tuple[list[str], str | None]:
+    args = sys.argv[1:]
     directories = []
     filename = None
 
-    i = 1
-    while i < len(sys.argv):
-        if sys.argv[i] == "-d":
-            i += 1
-            while i < len(sys.argv) and not sys.argv[i].startswith("-"):
-                directories.append(sys.argv[i])
-                i += 1
-        elif sys.argv[i] == "-f":
-            i += 1
-            if i < len(sys.argv):
-                filename = sys.argv[i]
-                i += 1
-        else:
-            i += 1
+    current_mode = None
 
+    for arg in args:
+        if arg == "-d":
+            current_mode = "dir"
+            continue
+        elif arg == "-f":
+            current_mode = "file"
+            continue
+
+        if current_mode == "dir":
+            directories.append(arg)
+        elif current_mode == "file":
+            filename = arg
+            current_mode = None
+
+    return directories, filename
+
+
+def main() -> None:
+    directories, filename = parse_args()
+
+    dir_path = ""
     if directories:
         dir_path = os.path.join(*directories)
         os.makedirs(dir_path, exist_ok=True)
-    else:
-        dir_path = ""
 
-    if filename:
-        file_path = os.path.join(dir_path, filename) if dir_path else filename
-    else:
+    if not filename:
         return
 
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    lines = [timestamp]
-    line_num = 1
+    if dir_path:
+        file_path = os.path.join(dir_path, filename)
+    else:
+        file_path = filename
 
+    lines = []
+    line_num = 1
     while True:
-        user_input = input("Enter content line: ")
+        try:
+            user_input = input("Enter content line: ")
+        except EOFError:
+            break
+
         if user_input == "stop":
             break
         lines.append(f"{line_num} {user_input}")
         line_num += 1
 
-    mode = "a" if os.path.exists(file_path) else "w"
-    with open(file_path, mode) as f:
-        if mode == "a" and os.path.getsize(file_path) > 0:
-            f.write("\n\n")
-        f.write("\n".join(lines) + "\n")
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    file_exists = os.path.exists(file_path) and os.path.getsize(file_path) > 0
+
+    with open(file_path, "a", encoding="utf-8") as f:
+        if file_exists:
+            f.write("\n")
+        f.write(timestamp + "\n")
+        if lines:
+            f.write("\n".join(lines) + "\n")
 
 
 if __name__ == "__main__":
