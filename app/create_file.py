@@ -8,21 +8,30 @@ def parse_args() -> tuple[list[str], str | None]:
     directories = []
     filename = None
 
-    current_mode = None
+    if "-d" in args:
+        d_idx = args.index("-d")
+        if "-f" in args:
+            f_idx = args.index("-f")
+            if d_idx < f_idx:
+                directories = args[d_idx + 1 : f_idx]
+            else:
+                directories = args[d_idx + 1 :]
+        else:
+            directories = args[d_idx + 1 :]
+        directories = [d for d in directories if not d.startswith("-")]
 
-    for arg in args:
-        if arg == "-d":
-            current_mode = "dir"
-            continue
-        elif arg == "-f":
-            current_mode = "file"
-            continue
+    if "-f" in args:
+        f_idx = args.index("-f")
+        if f_idx + 1 < len(args):
+            potential_file = args[f_idx + 1]
+            if not potential_file.startswith("-"):
+                filename = potential_file
 
-        if current_mode == "dir":
-            directories.append(arg)
-        elif current_mode == "file":
-            filename = arg
-            current_mode = None
+        if "-d" in args:
+            d_idx = args.index("-d")
+            if d_idx > f_idx:
+                directories = args[d_idx + 1 :]
+                directories = [d for d in directories if not d.startswith("-")]
 
     return directories, filename
 
@@ -30,18 +39,14 @@ def parse_args() -> tuple[list[str], str | None]:
 def main() -> None:
     directories, filename = parse_args()
 
-    dir_path = ""
-    if directories:
-        dir_path = os.path.join(*directories)
+    dir_path = os.path.join(*directories) if directories else ""
+    if dir_path:
         os.makedirs(dir_path, exist_ok=True)
 
     if not filename:
         return
 
-    if dir_path:
-        file_path = os.path.join(dir_path, filename)
-    else:
-        file_path = filename
+    file_path = os.path.join(dir_path, filename) if dir_path else filename
 
     lines = []
     line_num = 1
@@ -55,6 +60,10 @@ def main() -> None:
             break
         lines.append(f"{line_num} {user_input}")
         line_num += 1
+
+    file_dir = os.path.dirname(file_path)
+    if file_dir:
+        os.makedirs(file_dir, exist_ok=True)
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     file_exists = os.path.exists(file_path)
