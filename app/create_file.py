@@ -57,7 +57,7 @@ def open_file(dir_path: str | None, file_name: str, lines: list[str]) -> None:
 
     with open(full_path, "a", encoding="utf-8") as file:
         if file_exists:
-            file.write("\n")
+            file.write("\n\n")  # Changed from "\n" to "\n\n"
 
         file.write(f"{timestamp}\n")
 
