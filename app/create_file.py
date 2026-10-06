@@ -52,7 +52,7 @@ def main() -> None:
     file_exists = os.path.exists(file_path)
     with open(file_path, "a", encoding="utf-8") as f:
         if file_exists:
-            f.write("\n")
+            f.write("\n\n")
         f.write(timestamp + "\n")
         if lines:
             f.write("\n".join(lines) + "\n")
